@@ -12,7 +12,6 @@ def main():
     yellow = (249, 215, 28)
     green = (0, 128, 0)
     red = (237, 28, 36)
-    colors = [white, yellow, green, red]
 
     cam = Camera()
     pg.init()
@@ -22,39 +21,39 @@ def main():
     center = np.mat(dtype=np.double, data=[width / 2, height / 2]).T
     scale = 300
 
-    cube_1 = Cuboid([np.mat(dtype=np.double, data=[-1, -1, 1]).T,
-                     np.mat(dtype=np.double, data=[1, -1, 1]).T,
-                     np.mat(dtype=np.double, data=[1, 1, 1]).T,
-                     np.mat(dtype=np.double, data=[-1, 1, 1]).T,
-                     np.mat(dtype=np.double, data=[-1, -1, -1]).T,
-                     np.mat(dtype=np.double, data=[1, -1, -1]).T,
-                     np.mat(dtype=np.double, data=[1, 1, -1]).T,
-                     np.mat(dtype=np.double, data=[-1, 1, -1]).T])
-    cube_2 = Cuboid([np.mat(dtype=np.double, data=[-1, -1, 1-5]).T,
-                     np.mat(dtype=np.double, data=[1, -1, 1-5]).T,
-                     np.mat(dtype=np.double, data=[1, 1, 1-5]).T,
-                     np.mat(dtype=np.double, data=[-1, 1, 1-5]).T,
-                     np.mat(dtype=np.double, data=[-1, -1, -1-5]).T,
-                     np.mat(dtype=np.double, data=[1, -1, -1-5]).T,
-                     np.mat(dtype=np.double, data=[1, 1, -1-5]).T,
-                     np.mat(dtype=np.double, data=[-1, 1, -1-5]).T])
-    cube_3 = Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1-5]).T,
-                     np.mat(dtype=np.double, data=[1-6, -1, 1-5]).T,
-                     np.mat(dtype=np.double, data=[1-6, 1+2, 1-5]).T,
-                     np.mat(dtype=np.double, data=[-1-6, 1+2, 1-5]).T,
-                     np.mat(dtype=np.double, data=[-1-6, -1, -1-5]).T,
-                     np.mat(dtype=np.double, data=[1-6, -1, -1-5]).T,
-                     np.mat(dtype=np.double, data=[1-6, 1+2, -1-5]).T,
-                     np.mat(dtype=np.double, data=[-1-6, 1+2, -1-5]).T])
-    cube_4 = Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1+3]).T,
-                     np.mat(dtype=np.double, data=[1-6, -1, 1+3]).T,
-                     np.mat(dtype=np.double, data=[1-6, 1+4, 1+3]).T,
-                     np.mat(dtype=np.double, data=[-1-6, 1+4, 1+3]).T,
-                     np.mat(dtype=np.double, data=[-1-6, -1, -1]).T,
-                     np.mat(dtype=np.double, data=[1-6, -1, -1]).T,
-                     np.mat(dtype=np.double, data=[1-6, 1+4, - 1]).T,
-                     np.mat(dtype=np.double, data=[-1-6, 1+4, -1]).T])
-    cuboids: List[Cuboid] = [cube_1, cube_2, cube_3, cube_4]
+    cuboids: List[Cuboid] = []
+    cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1, -1, 1]).T,
+                           np.mat(dtype=np.double, data=[1, -1, 1]).T,
+                           np.mat(dtype=np.double, data=[1, 1, 1]).T,
+                           np.mat(dtype=np.double, data=[-1, 1, 1]).T,
+                           np.mat(dtype=np.double, data=[-1, -1, -1]).T,
+                           np.mat(dtype=np.double, data=[1, -1, -1]).T,
+                           np.mat(dtype=np.double, data=[1, 1, -1]).T,
+                           np.mat(dtype=np.double, data=[-1, 1, -1]).T], white))
+    cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1, -1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[1, -1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[1, 1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[-1, 1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[-1, -1, -1-5]).T,
+                           np.mat(dtype=np.double, data=[1, -1, -1-5]).T,
+                           np.mat(dtype=np.double, data=[1, 1, -1-5]).T,
+                           np.mat(dtype=np.double, data=[-1, 1, -1-5]).T], yellow))
+    # cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1-5]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, -1, 1-5]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, 1+2, 1-5]).T,
+    #                        np.mat(dtype=np.double, data=[-1-6, 1+2, 1-5]).T,
+    #                        np.mat(dtype=np.double, data=[-1-6, -1, -1-5]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, -1, -1-5]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, 1+2, -1-5]).T,
+    #                        np.mat(dtype=np.double, data=[-1-6, 1+2, -1-5]).T], green))
+    # cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1+3]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, -1, 1+3]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, 1+4, 1+3]).T,
+    #                        np.mat(dtype=np.double, data=[-1-6, 1+4, 1+3]).T,
+    #                        np.mat(dtype=np.double, data=[-1-6, -1, -1]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, -1, -1]).T,
+    #                        np.mat(dtype=np.double, data=[1-6, 1+4, - 1]).T,
+    #                        np.mat(dtype=np.double, data=[-1-6, 1+4, -1]).T], red))
 
     first_time = True
 
@@ -106,10 +105,19 @@ def main():
 
         screen.fill(black)
 
-        for i, cuboid in enumerate(cuboids):
-            lines = cuboid.to_list_of_lines(cam, scale, center)
-            for line in lines:
-                pg.draw.line(screen, colors[i], line[0], line[1])
+        polygons = []
+
+        for cuboid in cuboids:
+            polygons.extend(cuboid.to_list_of_polygons(cam, scale, center))
+
+        # SORT
+
+        for polygon in polygons:
+            # print("color:", polygon[0])
+            # print("pol", list(map(lambda _: _[:2], polygon))[1:])
+            pg.draw.polygon(screen,
+                            polygon[0],
+                            list(map(lambda _: _[:2], polygon))[1:])
 
         pg.display.update()
 

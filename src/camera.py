@@ -133,7 +133,7 @@ class Camera:
         if w > 0.00000000000001:
             return None
 
-        return (projected / w)[:2, 0]
+        return (projected / w)[:3, 0]
 
 
 def deg_to_rad(deg: int):
