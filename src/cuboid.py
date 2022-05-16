@@ -13,7 +13,7 @@ class Cuboid:
         self.points = points
         self.color = color
 
-    def to_list_of_polygons(self, cam: Camera, scale: int, center: np.matrix) -> List[List[Tuple[int, int]]]:
+    def to_list_of_polygons(self, cam: Camera, scale: int, center: np.matrix) -> List[List[Tuple[np.double, np.double, np.double]]]:
         projected_points = []
         polygons = []
 

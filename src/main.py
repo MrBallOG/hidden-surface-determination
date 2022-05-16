@@ -1,8 +1,9 @@
 from typing import List
-from camera import Camera
 import numpy as np
 import pygame as pg
+from camera import Camera
 from cuboid import Cuboid
+from hidden_surface_determination import depth_sort
 
 
 def main():
@@ -110,7 +111,7 @@ def main():
         for cuboid in cuboids:
             polygons.extend(cuboid.to_list_of_polygons(cam, scale, center))
 
-        # SORT
+        depth_sort(polygons)
 
         for polygon in polygons:
             # print("color:", polygon[0])
