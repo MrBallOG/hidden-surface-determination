@@ -133,7 +133,11 @@ class Camera:
         if w > 0.00000000000001:
             return None
 
-        return (projected / w)[:3, 0]
+        projected = (projected / w)
+        dist = calc_dist(rotated)
+        projected[3, 0] = dist
+
+        return projected
 
 
 def deg_to_rad(deg: int):
@@ -154,3 +158,7 @@ def fov_to_scale(fov: int) -> np.double:
 
 def inverse_matrix(m: np.matrix):
     return np.linalg.inv(m)
+
+
+def calc_dist(dp: np.matrix):
+    return np.sqrt(dp[0] ** 2 + dp[1] ** 2 + dp[2] ** 2)

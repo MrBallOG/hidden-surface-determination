@@ -33,20 +33,20 @@ def main():
                            np.mat(dtype=np.double, data=[-1, 1, -1]).T], white))
     cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1, -1, 1-5]).T,
                            np.mat(dtype=np.double, data=[1, -1, 1-5]).T,
-                           np.mat(dtype=np.double, data=[1, 1, 1-5]).T,
-                           np.mat(dtype=np.double, data=[-1, 1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[0.5, 1, 0.5-5]).T,
+                           np.mat(dtype=np.double, data=[-0.5, 1, 0.5-5]).T,
                            np.mat(dtype=np.double, data=[-1, -1, -1-5]).T,
                            np.mat(dtype=np.double, data=[1, -1, -1-5]).T,
-                           np.mat(dtype=np.double, data=[1, 1, -1-5]).T,
-                           np.mat(dtype=np.double, data=[-1, 1, -1-5]).T], yellow))
-    # cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1-5]).T,
-    #                        np.mat(dtype=np.double, data=[1-6, -1, 1-5]).T,
-    #                        np.mat(dtype=np.double, data=[1-6, 1+2, 1-5]).T,
-    #                        np.mat(dtype=np.double, data=[-1-6, 1+2, 1-5]).T,
-    #                        np.mat(dtype=np.double, data=[-1-6, -1, -1-5]).T,
-    #                        np.mat(dtype=np.double, data=[1-6, -1, -1-5]).T,
-    #                        np.mat(dtype=np.double, data=[1-6, 1+2, -1-5]).T,
-    #                        np.mat(dtype=np.double, data=[-1-6, 1+2, -1-5]).T], green))
+                           np.mat(dtype=np.double, data=[0.5, 1, -0.5-5]).T,
+                           np.mat(dtype=np.double, data=[-0.5, 1, -0.5-5]).T], yellow))
+    cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[1-6, -1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[1-6, 1+1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[-1-6, 1+1, 1-5]).T,
+                           np.mat(dtype=np.double, data=[-1-6, -1, -1-5]).T,
+                           np.mat(dtype=np.double, data=[1-6, -1, -1-5]).T,
+                           np.mat(dtype=np.double, data=[1-6, 1+1, -1-5]).T,
+                           np.mat(dtype=np.double, data=[-1-6, 1+1, -1-5]).T], green))
     # cuboids.append(Cuboid([np.mat(dtype=np.double, data=[-1-6, -1, 1+3]).T,
     #                        np.mat(dtype=np.double, data=[1-6, -1, 1+3]).T,
     #                        np.mat(dtype=np.double, data=[1-6, 1+4, 1+3]).T,
@@ -114,11 +114,16 @@ def main():
         depth_sort(polygons)
 
         for polygon in polygons:
-            # print("color:", polygon[0])
-            # print("pol", list(map(lambda _: _[:2], polygon))[1:])
             pg.draw.polygon(screen,
                             polygon[0],
                             list(map(lambda _: _[:2], polygon))[1:])
+
+            for i in range(1, len(polygon)):
+                if i == len(polygon) - 1:
+                    pg.draw.line(screen, black, polygon[1][:2], polygon[i][:2])
+                else:
+                    pg.draw.line(
+                        screen, black, polygon[i][:2], polygon[i+1][:2])
 
         pg.display.update()
 

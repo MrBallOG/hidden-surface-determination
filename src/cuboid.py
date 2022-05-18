@@ -30,7 +30,7 @@ class Cuboid:
 
                 for i in ordered_points:
                     polygon.append(
-                        (projected_points[i][0, 0], projected_points[i][1, 0], projected_points[i][2, 0]))
+                        (projected_points[i][0, 0], projected_points[i][1, 0], projected_points[i][2, 0], projected_points[i][3, 0]))
 
                 polygons.append(polygon)
 
