@@ -1,6 +1,5 @@
 import numpy as np
 
-
 T_VAL = 0.1
 T_POINTS = np.matrix(dtype=np.double, data=np.array([[T_VAL, 0, 0, 1],
                                                      [-T_VAL, 0, 0, 1],
@@ -10,6 +9,9 @@ T_POINTS = np.matrix(dtype=np.double, data=np.array([[T_VAL, 0, 0, 1],
                                                      [0, 0, -T_VAL, 1]])).T
 DIST = 0.1
 ANGLE_INCR = 1/180 * np.pi
+WIDTH, HEIGHT = 1000, 800
+CENTER = np.mat(dtype=np.double, data=[WIDTH / 2, HEIGHT / 2]).T
+SCALE = 300
 
 
 class Camera:
@@ -127,17 +129,15 @@ class Camera:
 
     def project_point(self, point: np.matrix) -> np.matrix:
         rotated = self._transform_world_to_cam(point)
-        projected = self.projection_matrix * rotated
-        w = projected[3, 0]
+        projected_3d = self.projection_matrix * rotated
+        w = projected_3d[3, 0]
 
         if w > 0.00000000000001:
             return None
 
-        projected = (projected / w)
-        dist = calc_dist(rotated)
-        projected[3, 0] = dist
+        projected_2d = projected_3d[:2, 0] / w * SCALE + CENTER
 
-        return projected
+        return (projected_2d[0, 0], projected_2d[1, 0])
 
 
 def deg_to_rad(deg: int):
