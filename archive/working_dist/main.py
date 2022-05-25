@@ -1,6 +1,5 @@
 from typing import List
 import pygame as pg
-import numpy as np
 from sys import argv
 from reader import read_obj_file
 from camera import Camera, WIDTH, HEIGHT
@@ -25,31 +24,14 @@ def main():
     vec_3d_list, faces = read_obj_file(f"../obj/{objects[choice]}.obj")
     triangles: List[Triangle] = []
 
-    np.set_printoptions(precision=3, suppress=True)
-    for i, face in enumerate(faces):
-        # if i == 3 or i == 9:
-        triangle = Triangle(vec_3d_list, face, cam)
+    for face in faces:
+        triangle = Triangle(face)
         triangle.set_centroid(vec_3d_list)
         triangle.set_normal(vec_3d_list)
-        triangle.set_plane(vec_3d_list)
         triangles.append(triangle)
-        # print("Normal", triangle.normal.T)
-        # print("Plane", triangle.plane.T)
-        # print("Centroid", triangle.centroid.T, "\n")
-
-    # x = 1
-    # for i, t1 in enumerate(triangles):
-    #     for j, t2 in enumerate(triangles):
-    #         if np.abs(t1.plane[0, 0] - t2.plane[0, 0]) == 0:
-    #             if np.abs(t1.plane[1, 0] - t2.plane[1, 0]) == 0:
-    #                 if np.abs(t1.plane[2, 0] - t2.plane[2, 0]) == 0:
-    #                     if np.abs(t1.plane[3, 0] - t2.plane[3, 0]) == 0:
-    #                         if np.array_equal(t1.plane, t2.plane):
-    #                             print(x)
-    #                             x += 1
 
     first_time = True
-    # camera_moved = True
+    camera_moved = True
     wire_frame = True
     show_back_facing_triangles = True
 
@@ -76,22 +58,22 @@ def main():
 
         if keys[pg.K_d] > 0:
             cam.translate_x_neg()
-            # camera_moved = True
+            camera_moved = True
         if keys[pg.K_a] > 0:
             cam.translate_x_pos()
-            # camera_moved = True
+            camera_moved = True
         if keys[pg.K_w] > 0:
             cam.translate_y_pos()
-            # camera_moved = True
+            camera_moved = True
         if keys[pg.K_s] > 0:
             cam.translate_y_neg()
-            # camera_moved = True
+            camera_moved = True
         if keys[pg.K_q] > 0:
             cam.translate_z_pos()
-            # camera_moved = True
+            camera_moved = True
         if keys[pg.K_e] > 0:
             cam.translate_z_neg()
-            # camera_moved = True
+            camera_moved = True
         if keys[pg.K_k] > 0:
             cam.rotate_x_neg()
         if keys[pg.K_i] > 0:
@@ -137,9 +119,9 @@ def main():
             for index in indexes_to_project:
                 vec_2d_dict[index] = cam.project_point(vec_3d_list[index])
 
-        # if camera_moved:
-        #     set_dists(triangles_to_project)
-        #     camera_moved = False
+        if camera_moved:
+            set_dists(triangles_to_project, cam)
+            camera_moved = False
 
         depth_sort(triangles_to_project)
 
@@ -159,9 +141,9 @@ def main():
         pg.display.update()
 
 
-def set_dists(triangles: List[Triangle]):
+def set_dists(triangles: List[Triangle], cam: Camera):
     for triangle in triangles:
-        triangle.set_dist()
+        triangle.set_dist(cam)
 
 
 main()

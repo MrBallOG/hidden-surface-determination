@@ -161,4 +161,4 @@ def inverse_matrix(m: np.matrix):
 
 
 def calc_dist(dp: np.matrix):
-    return np.linalg.norm(dp)
+    return np.sqrt(dp[0] ** 2 + dp[1] ** 2 + dp[2] ** 2)
