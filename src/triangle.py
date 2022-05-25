@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import numpy as np
 from camera import Camera, calc_dist
 from functools import cmp_to_key
@@ -6,23 +6,24 @@ from functools import cmp_to_key
 
 class Triangle():
     def __init__(self, vec_3d_list: List[np.matrix], vec_indexes: List[int], cam: Camera):
-        self.vec_3d_list = vec_3d_list
-        self.vec_indexes = vec_indexes
         self.cam = cam
+        self.vec_indexes = vec_indexes
+        self.p1 = vec_3d_list[vec_indexes[0]]
+        self.p2 = vec_3d_list[vec_indexes[1]]
+        self.p3 = vec_3d_list[vec_indexes[2]]
 
-    def set_centroid(self, vec_3d_list: List[np.matrix]):
-        centroid = np.mat(dtype=np.double, data=[0, 0, 0]).T
+        if self.p1 is not None and self.p2 is not None and self.p3 is not None:
+            self.set_min_max_y()
+            self.set_normal()
+            self.set_plane()
 
-        for i in range(3):
-            vec_3d = vec_3d_list[self.vec_indexes[i]]
-            centroid += vec_3d
+    def set_min_max_y(self):
+        self.min_y = min([self.p1[1, 0], self.p2[1, 0], self.p3[1, 0]])
+        self.max_y = max([self.p1[1, 0], self.p2[1, 0], self.p3[1, 0]])
 
-        self.centroid = centroid / 3
-
-    def set_normal(self, vec_3d_list: List[np.matrix]):
-        p1, p2, p3 = (vec_3d_list[i] for i in self.vec_indexes)
-        u = p2 - p1
-        v = p3 - p1
+    def set_normal(self):
+        u = self.p2 - self.p1
+        v = self.p3 - self.p1
 
         x = u[1, 0] * v[2, 0] - u[2, 0] * v[1, 0]
         y = u[2, 0] * v[0, 0] - u[0, 0] * v[2, 0]
@@ -30,36 +31,27 @@ class Triangle():
 
         self.normal = np.mat(dtype=np.double, data=[x, y, z]).T
 
-    def set_dist(self):
-        cam_pos = self.cam.point[:3, 0]
-        self.dist = calc_dist(self.centroid - cam_pos)[0, 0]
-
-    def set_plane(self, vec_3d_list: List[np.matrix]):
-        p1 = vec_3d_list[self.vec_indexes[0]]
+    def set_plane(self):
         normal = self.normal
-        d = (-p1.T * normal)[0, 0]
+        d = (-self.p1.T * normal)[0, 0]
         plane = np.mat(dtype=np.double, data=[
                        normal[0, 0], normal[1, 0], normal[2, 0], d]).T
+
         self.plane = plane / np.linalg.norm(plane)
 
-        # print("p1", p1)
-        # print("-p1.T", -p1.T)
-        # print("normal", self.normal)
-        # print("centroid", self.centroid)
-        # print("plane", self.plane, "\n\n")
-        # p1, p2, p3 = (vec_3d_list[i] for i in self.vec_indexes)
-        # print(self.normal.T * (p2-p1), self.normal.T * (p3-p1))
+    def point_in_triangle(self, x: float, y: float):
+        d1 = sign((x, y), self.p1, self.p2)
+        d2 = sign((x, y), self.p2, self.p3)
+        d3 = sign((x, y), self.p3, self.p1)
+
+        has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
+        has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
+
+        return not (has_neg and has_pos)
+
+    def get_z_at_x_y(self, x: float, y: float):
+        return -((x * self.plane[0, 0] + y * self.plane[1, 0] + self.plane[3, 0]) / self.plane[2, 0])
 
 
-# def my_cmp(a, b, c):
-#     if a > b-c:
-#         return 1
-#     elif b > a:
-#         return -1   # wstawia na poczatek listy
-#     else:
-#         return 0
-
-
-# def sort_this(arr):
-#     x = 1
-#     arr.sort(key=cmp_to_key(my_cmp(c=x)))
+def sign(p1: Tuple, p2: np.matrix, p3: np.matrix):
+    return (p1[0] - p3[0, 0]) * (p2[1, 0] - p3[1, 0]) - (p2[0, 0] - p3[0, 0]) * (p1[1] - p3[1, 0])

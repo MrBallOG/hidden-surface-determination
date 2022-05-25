@@ -16,7 +16,7 @@ def compare(t1: Triangle, t2: Triangle):
         return 0
 
     dot_cam = (t1.cam.point.T * plane_t1)[0, 0]
-    p1, p2, p3 = (t2.vec_3d_list[i] for i in t2.vec_indexes)
+    p1, p2, p3 = (t2.p1, t2.p2, t2.p3)
     dot_p1 = dot_3d_and_4d(p1, plane_t1)
     dot_p2 = dot_3d_and_4d(p2, plane_t1)
     dot_p3 = dot_3d_and_4d(p3, plane_t1)
@@ -38,7 +38,7 @@ def compare(t1: Triangle, t2: Triangle):
         return 1
 
     dot_cam = (t1.cam.point.T * plane_t2)[0, 0]
-    p1, p2, p3 = (t1.vec_3d_list[i] for i in t1.vec_indexes)
+    p1, p2, p3 = (t1.p1, t1.p2, t1.p3)
     dot_p1 = dot_3d_and_4d(p1, plane_t2)
     dot_p2 = dot_3d_and_4d(p2, plane_t2)
     dot_p3 = dot_3d_and_4d(p3, plane_t2)

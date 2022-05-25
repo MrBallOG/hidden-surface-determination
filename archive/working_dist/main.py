@@ -21,7 +21,7 @@ def main():
     cam = Camera()
     objects = ["teapot", "cube", "sphere"]
     choice = int(argv[1]) if len(argv) > 1 else 0
-    vec_3d_list, faces = read_obj_file(f"../obj/{objects[choice]}.obj")
+    vec_3d_list, faces = read_obj_file(f"../../obj/{objects[choice]}.obj")
     triangles: List[Triangle] = []
 
     for face in faces:

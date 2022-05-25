@@ -3,9 +3,10 @@ import pygame as pg
 import numpy as np
 from sys import argv
 from reader import read_obj_file
-from camera import Camera, WIDTH, HEIGHT
+from camera import Camera, WIDTH, HEIGHT, SCALE, CENTER
 from triangle import Triangle
 from hidden_surface_determination import depth_sort
+from timeit import default_timer as tim
 
 
 def main():
@@ -23,15 +24,13 @@ def main():
     objects = ["teapot", "cube", "sphere"]
     choice = int(argv[1]) if len(argv) > 1 else 0
     vec_3d_list, faces = read_obj_file(f"../obj/{objects[choice]}.obj")
+    vec_3d_list_len = len(vec_3d_list)
     triangles: List[Triangle] = []
 
     np.set_printoptions(precision=3, suppress=True)
     for i, face in enumerate(faces):
         # if i == 3 or i == 9:
         triangle = Triangle(vec_3d_list, face, cam)
-        triangle.set_centroid(vec_3d_list)
-        triangle.set_normal(vec_3d_list)
-        triangle.set_plane(vec_3d_list)
         triangles.append(triangle)
         # print("Normal", triangle.normal.T)
         # print("Plane", triangle.plane.T)
@@ -112,56 +111,120 @@ def main():
 
         screen.fill(black)
 
-        triangles_to_project = []
-        vec_2d_dict = {}
+        triangles_to_project: List[Triangle] = []
+        vec_3d_dict = {}
 
         if show_back_facing_triangles:
-            triangles_to_project = triangles
+            for i in range(vec_3d_list_len):
+                vec_3d_dict[i] = cam.project_point(vec_3d_list[i])
 
-            for index in range(len(vec_3d_list)):
-                vec_2d_dict[index] = cam.project_point(vec_3d_list[index])
-        else:
             for triangle in triangles:
+                triangles_to_project.append(
+                    Triangle(vec_3d_dict, triangle.vec_indexes, cam))
+        else:
+            vec_indexes = set()
+            triangle_indexes = []
+
+            for i, triangle in enumerate(triangles):
                 p1 = vec_3d_list[triangle.vec_indexes[0]]
                 p1_in_cam_world = p1 - cam.point[:3, :]
                 dot = p1_in_cam_world.T * triangle.normal
 
                 if dot < 0:
-                    triangles_to_project.append(triangle)
+                    triangle_indexes.append(i)
+                    vec_indexes.update(triangle.vec_indexes)
 
-            indexes_to_project = set()
+            for i in vec_indexes:
+                vec_3d_dict[i] = cam.project_point(vec_3d_list[i])
 
-            for triangle in triangles_to_project:
-                indexes_to_project.update(triangle.vec_indexes)
+            for i in triangle_indexes:
+                triangles_to_project.append(
+                    Triangle(vec_3d_dict, triangles[i].vec_indexes, cam))
 
-            for index in indexes_to_project:
-                vec_2d_dict[index] = cam.project_point(vec_3d_list[index])
+        # # if camera_moved:
+        # #     set_dists(triangles_to_project)
+        # #     camera_moved = False
 
-        # if camera_moved:
-        #     set_dists(triangles_to_project)
-        #     camera_moved = False
+        s = tim()
 
-        depth_sort(triangles_to_project)
+        triangles_to_project.sort(key=lambda triangle: triangle.max_y)
+        pixel_array = pg.PixelArray(screen)
 
-        for triangle in triangles_to_project:
-            p1, p2, p3 = (vec_2d_dict[i] for i in triangle.vec_indexes)
+        for y in range(HEIGHT):
+            y3d = y_to_3d(y)
+            triangles_at_y = [
+                t for t in triangles_to_project if t.p1 is not None and t.p2 is not None and t.p3 is not None and t.max_y >= y3d and t.min_y <= y3d]
 
-            if p1 is None or p2 is None or p3 is None:
+            if len(triangles_at_y) == 0:
                 continue
 
-            pg.draw.polygon(screen, yellow, [p1, p2, p3])
+            for x in range(WIDTH):
+                x3d = x_to_3d(x)
+                triangles_at_px = [
+                    t for t in triangles_at_y if t.point_in_triangle(x3d, y3d)]
+                triangles_at_px_len = len(triangles_at_px)
 
-            if wire_frame:
-                pg.draw.line(screen, black, p1, p2)
-                pg.draw.line(screen, black, p2, p3)
-                pg.draw.line(screen, black, p1, p3)
+                if triangles_at_px_len == 0:
+                    continue
 
-        pg.display.update()
+                closest_triangle = triangles_at_px[0]
+                closest_distance = closest_triangle.get_z_at_x_y(x3d, y3d)
+
+                for i in range(1, triangles_at_px_len):
+                    distance = triangles_at_px[i].get_z_at_x_y(x3d, y3d)
+
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        closest_triangle = triangles_at_px[i]
+
+                pixel_array[x, y] = yellow
+
+        e = tim()
+
+        print((e-s) / (HEIGHT * WIDTH))
+        print((e-s))
+
+        print("DONE")
+
+        # depth_sort(triangles_to_project)
+
+        # for triangle in triangles_to_project:
+        #     p1 = triangle.p1
+        #     p2 = triangle.p2
+        #     p3 = triangle.p3
+
+        #     if p1 is None or p2 is None or p3 is None:
+        #         continue
+
+        #     p1 = p1[:2, 0] * SCALE + CENTER
+        #     p2 = p2[:2, 0] * SCALE + CENTER
+        #     p3 = p3[:2, 0] * SCALE + CENTER
+
+        #     p1 = (p1[0, 0], p1[1, 0])
+        #     p2 = (p2[0, 0], p2[1, 0])
+        #     p3 = (p3[0, 0], p3[1, 0])
+
+        #     pg.draw.polygon(screen, yellow, [p1, p2, p3])
+
+        #     if wire_frame:
+        #         pg.draw.line(screen, black, p1, p2)
+        #         pg.draw.line(screen, black, p2, p3)
+        #         pg.draw.line(screen, black, p1, p3)
+        pixel_array.close()
+        pg.display.flip()
 
 
 def set_dists(triangles: List[Triangle]):
     for triangle in triangles:
         triangle.set_dist()
+
+
+def y_to_3d(y: int) -> float:
+    return 2 * y / HEIGHT - 1
+
+
+def x_to_3d(x: int) -> float:
+    return 2 * x / WIDTH - 1
 
 
 main()
