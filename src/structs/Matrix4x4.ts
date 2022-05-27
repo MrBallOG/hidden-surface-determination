@@ -123,7 +123,7 @@ export class Matrix4x4 {
         return matrix;
     }
 
-    public static matirxInverse(matrix: Matrix4x4): Matrix4x4 {
+    public static matrixInverse(matrix: Matrix4x4): Matrix4x4 {
         const matInv = Matrix4x4.empty();
         matInv.rows[0 * 4 + 0] = matrix.rows[0 * 4 + 0];
         matInv.rows[0 * 4 + 1] = matrix.rows[1 * 4 + 0];

@@ -5,7 +5,7 @@ import { Vec3d } from "./structs/Vectors";
 import type { Tris } from "./structs/Tris";
 import { generateLg } from "./structs/Texture";
 
-const identity = Matrix4x4.identity();
+// const identity = Matrix4x4.identity();
 const texture = generateLg()
 
 let drawEdges = false
@@ -125,13 +125,14 @@ export class CameraEngine {
 
     private initProjector() {
         const projMatrix = this.cameraInfo.projMatrix;
-        const lookAt = this.cameraPos.createLookAtMatrix()
+        const rotationMatrix = this.cameraPos.rotMatrix
+        const vCamera = this.cameraPos.cameraPos
 
         this.projector = (tris: Tris): Tris => {
             let projTris = tris.copy()
             for (let i = 0; i < 3; i++) {
-                let temp = identity.multiplyVec3d(tris.vertexes[i])
-                temp = lookAt.multiplyVec3d(temp)
+                let temp = tris.vertexes[i].subtract(vCamera)
+                temp = rotationMatrix.multiplyVec3d(temp)
                 projTris.vertexes[i] = projMatrix.projectVec(temp)
             }
 
@@ -172,7 +173,7 @@ class CameraInfo {
     public zNear = 0.1;
     public width: number;
     public height: number;
-    public projMatrix;
+    public projMatrix: ProjMatrix;
 
     constructor(width: number, height: number) {
         this.width = width;
@@ -201,107 +202,153 @@ class CameraPos {
     // private vCamera = Vec3d.from(0.194,0.039,1.32)
     private vCamera = Vec3d.from(0, 0, -6)
     //normalized look direction
-    private vLookDir = Vec3d.from(0, 0, 1)
+    // private vLookDir = Vec3d.from(0, 0, 1)
     //up vector
     private vUp = Vec3d.from(0, 1, 0)
     private moveFactor = 0.1;
     private rotateFactor = Math.PI / 128;
-    private rotX = 0; // -0.3926;
-    private rotY = 0; // 0.785;
-    private rotZ = 0;
+    // private rotX = 0; // -0.3926;
+    // private rotY = 0; // 0.785;
+    // private rotZ = 0;
 
     private rotationMatrix = Matrix4x4.identity()
     private rotationMatrixInverse = Matrix4x4.identity()
-    private translationVectors = [
+    private translationVecs = [
         Vec3d.from(this.moveFactor, 0, 0),
         Vec3d.from(-this.moveFactor, 0, 0),
         Vec3d.from(0, this.moveFactor, 0),
         Vec3d.from(0, -this.moveFactor, 0),
         Vec3d.from(0, 0, this.moveFactor),
         Vec3d.from(0, 0, -this.moveFactor)]
+    private rotXPos = Matrix4x4.rotationX(-this.rotateFactor)
+    private rotXNeg = Matrix4x4.rotationX(this.rotateFactor)
+    private rotYPos = Matrix4x4.rotationY(-this.rotateFactor)
+    private rotYNeg = Matrix4x4.rotationY(this.rotateFactor)
+    private rotZPos = Matrix4x4.rotationZ(this.rotateFactor)
+    private rotZNeg = Matrix4x4.rotationZ(-this.rotateFactor)
 
-    public createLookAtMatrix(): Matrix4x4 {
-        console.log("camera:", this.vCamera, this.rotX, this.rotY, this.rotZ)
-        const vTarget = this.vCamera.add(this.vTarget());
-        return Matrix4x4.lookAt(this.vCamera, vTarget, this.vUp)
-            .multiply(Matrix4x4.rotationZ(this.rotZ));
+    public get rotMatrix(): Matrix4x4 {
+        // console.log("camera:", this.vCamera, this.rotX, this.rotY, this.rotZ)
+        // const vTarget = this.vCamera.add(this.vTarget());
+        // return Matrix4x4.lookAt(this.vCamera, vTarget, this.vUp)
+        //     .multiply(Matrix4x4.rotationZ(this.rotZ));
+        // console.log(this.vCamera)
+        return this.rotationMatrix
     }
 
     public moveForward() {
-        const vForward = this.vTarget().multiply(this.moveFactor)
-        this.vCamera = this.vCamera.add(vForward);
+        // const vForward = this.vTarget().multiply(this.moveFactor)
+        // this.vCamera = this.vCamera.add(vForward);
+
+        this.translate(4);
     }
 
     public moveBackward() {
-        const vForward = this.vTarget().multiply(this.moveFactor)
-        this.vCamera = this.vCamera.subtract(vForward);
+        // const vForward = this.vTarget().multiply(this.moveFactor)
+        // this.vCamera = this.vCamera.subtract(vForward);
+
+        this.translate(5);
     }
 
     public moveLeft() {
-        const vForward = Matrix4x4.rotationY(this.rotY + Math.PI / 2)
-            .multiplyVec3d(this.vLookDir)
-            .multiply(this.moveFactor)
+        // const vForward = Matrix4x4.rotationY(this.rotY + Math.PI / 2)
+        //     .multiplyVec3d(this.vLookDir)
+        //     .multiply(this.moveFactor)
 
-        this.vCamera = this.vCamera.add(vForward)
+        // this.vCamera = this.vCamera.add(vForward)
+
+        this.translate(1);
     }
 
     public moveRight() {
-        const vForward = Matrix4x4.rotationY(this.rotY + Math.PI / 2)
-            .multiplyVec3d(this.vLookDir)
-            .multiply(this.moveFactor)
+        // const vForward = Matrix4x4.rotationY(this.rotY + Math.PI / 2)
+        //     .multiplyVec3d(this.vLookDir)
+        //     .multiply(this.moveFactor)
 
-        this.vCamera = this.vCamera.subtract(vForward)
+        // this.vCamera = this.vCamera.subtract(vForward)
+
+        this.translate(0);
     }
 
     public moveUp() {
-        const vMove = this.vUp.multiply(this.moveFactor)
+        // const vMove = this.vUp.multiply(this.moveFactor)
 
-        this.vCamera = this.vCamera.subtract(vMove)
+        // this.vCamera = this.vCamera.subtract(vMove)
+
+        this.translate(3);
     }
 
     public moveDown() {
-        const vMove = this.vUp.multiply(this.moveFactor)
+        // const vMove = this.vUp.multiply(this.moveFactor)
 
-        this.vCamera = this.vCamera.add(vMove)
+        // this.vCamera = this.vCamera.add(vMove)
+
+        this.translate(2);
+    }
+
+    private translate(i: number) {
+        const translationVec = this.translationVecs[i]
+        const rotatedVec = this.rotationMatrixInverse.multiplyVec3d(translationVec)
+        this.vCamera = this.vCamera.add(rotatedVec)
     }
 
     public rotatePosX() {
-        this.rotX += this.rotateFactor;
+        // this.rotX += this.rotateFactor;
+
+        this.rotationMatrix = this.rotXPos.multiply(this.rotationMatrix)
+        this.rotationMatrixInverse = Matrix4x4.matrixInverse(this.rotationMatrix)
     }
 
     public rotateNegX() {
-        this.rotX -= this.rotateFactor;
+        // this.rotX -= this.rotateFactor;
+
+        this.rotationMatrix = this.rotXNeg.multiply(this.rotationMatrix)
+        this.rotationMatrixInverse = Matrix4x4.matrixInverse(this.rotationMatrix)
     }
 
     public rotatePosY() {
-        this.rotY += this.rotateFactor;
+        // this.rotY += this.rotateFactor;
+
+        this.rotationMatrix = this.rotYPos.multiply(this.rotationMatrix)
+        this.rotationMatrixInverse = Matrix4x4.matrixInverse(this.rotationMatrix)
     }
 
     public rotateNegY() {
-        this.rotY -= this.rotateFactor;
+        // this.rotY -= this.rotateFactor;
+
+        this.rotationMatrix = this.rotYNeg.multiply(this.rotationMatrix)
+        this.rotationMatrixInverse = Matrix4x4.matrixInverse(this.rotationMatrix)
     }
 
     public rotatePosZ() {
-        this.rotZ += this.rotateFactor;
+        // this.rotZ += this.rotateFactor;
+
+        this.rotationMatrix = this.rotZPos.multiply(this.rotationMatrix)
+        this.rotationMatrixInverse = Matrix4x4.matrixInverse(this.rotationMatrix)
     }
 
     public rotateNegZ() {
-        this.rotZ -= this.rotateFactor;
+        // this.rotZ -= this.rotateFactor;
+
+        this.rotationMatrix = this.rotZNeg.multiply(this.rotationMatrix)
+        this.rotationMatrixInverse = Matrix4x4.matrixInverse(this.rotationMatrix)
     }
 
-    private vTarget(): Vec3d {
-        let vTarget = this.vLookDir;
+    // private vTarget(): Vec3d {
+    //     let vTarget = this.vLookDir;
 
 
-        vTarget = Matrix4x4.rotationX(this.rotX)
-            .multiply(Matrix4x4.rotationY(this.rotY))
-            .multiplyVec3d(vTarget)
+    //     // vTarget = Matrix4x4.rotationX(this.rotX)
+    //     //     .multiply(Matrix4x4.rotationY(this.rotY))
+    //     //     .multiplyVec3d(vTarget)
 
-        return vTarget
-    }
+    //     vTarget = this.rotationMatrix.multiplyVec3d(vTarget)
+
+    //     return vTarget
+    // }
 
     public get cameraPos(): Vec3d {
-        return this.vCamera.multiply(1)
+        return this.vCamera
     }
 
 }
