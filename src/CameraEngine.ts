@@ -25,7 +25,7 @@ export class CameraEngine {
     }
 
     public clear(ctx: Ctx) {
-        ctx.fillStyle = 'pink'
+        ctx.fillStyle = 'rgb(31, 28, 28)'
         ctx.fillRect(0, 0, this.cameraInfo.width, this.cameraInfo.height);
     }
 
@@ -205,13 +205,20 @@ class CameraPos {
     //up vector
     private vUp = Vec3d.from(0, 1, 0)
     private moveFactor = 0.1;
-    private rotateFactor = Math.PI / 16;
+    private rotateFactor = Math.PI / 128;
     private rotX = 0; // -0.3926;
     private rotY = 0; // 0.785;
     private rotZ = 0;
 
     private rotationMatrix = Matrix4x4.identity()
     private rotationMatrixInverse = Matrix4x4.identity()
+    private translationVectors = [
+        Vec3d.from(this.moveFactor, 0, 0),
+        Vec3d.from(-this.moveFactor, 0, 0),
+        Vec3d.from(0, this.moveFactor, 0),
+        Vec3d.from(0, -this.moveFactor, 0),
+        Vec3d.from(0, 0, this.moveFactor),
+        Vec3d.from(0, 0, -this.moveFactor)]
 
     public createLookAtMatrix(): Matrix4x4 {
         console.log("camera:", this.vCamera, this.rotX, this.rotY, this.rotZ)

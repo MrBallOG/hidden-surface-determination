@@ -84,69 +84,78 @@
 		['Rotate Z', () => camera.cameraPos.rotatePosZ()],
 		['Rotate -Z', () => camera.cameraPos.rotateNegZ()]
 	];
+
+	const handleKeydown = (event) => {
+		let key = event.key;
+		if (key == 'a') {
+			moveActions[4][1]();
+			update();
+		} else if (key === 'd') {
+			moveActions[5][1]();
+			update();
+		} else if (key === 'w') {
+			moveActions[2][1]();
+			update();
+		} else if (key === 's') {
+			moveActions[3][1]();
+			update();
+		} else if (key === 'q') {
+			moveActions[1][1]();
+			update();
+		} else if (key === 'e') {
+			moveActions[0][1]();
+			update();
+		} else if (key === 'j') {
+			rotateActions[2][1]();
+			update();
+		} else if (key === 'l') {
+			rotateActions[3][1]();
+			update();
+		} else if (key === 'i') {
+			rotateActions[0][1]();
+			update();
+		} else if (key === 'k') {
+			rotateActions[1][1]();
+			update();
+		} else if (key === 'u') {
+			rotateActions[4][1]();
+			update();
+		} else if (key === 'o') {
+			rotateActions[5][1]();
+			update();
+		} else if (key === 'z') {
+			camera.cameraInfo.posZoom();
+			update();
+		} else if (key === 'x') {
+			camera.cameraInfo.negZoom();
+			update();
+		} else if (key === 'r') {
+			camera = new CameraEngine(width, height);
+			update();
+		}
+	};
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div>
 	<canvas id="camera_canvas" bind:this={canvas} />
-
-	<div>
-		{#each moveActions as action}
-			<button
-				on:click={() => {
-					action[1]();
-					update();
-				}}
-			>
-				{action[0]}
-			</button>
-		{/each}
-		<br />
-		{#each rotateActions as action}
-			<button
-				on:click={() => {
-					action[1]();
-					update();
-				}}
-			>
-				{action[0]}
-			</button>
-		{/each}
-
-		<br />
-		<button
-			on:click={() => {
-				camera.cameraInfo.posZoom();
-				update();
-			}}
-		>
-			Zoom +
-		</button>
-
-		<button
-			on:click={() => {
-				camera.cameraInfo.negZoom();
-				update();
-			}}
-		>
-			Zoom -
-		</button>
-
-		<br />
-		<button
-			on:click={() => {
-				camera = new CameraEngine(width, height);
-				update();
-			}}
-		>
-			Reset
-		</button>
-	</div>
 </div>
 
 <style>
-	button {
-		width: 200px;
-		height: 50px;
-		background-color: aqua;
+	div {
+		display: flex;
+		justify-content: center;
+		height: 100%;
+	}
+	canvas {
+		padding: 0;
+		margin: auto;
+		display: block;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
 	}
 </style>
