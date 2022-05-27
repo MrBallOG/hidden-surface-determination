@@ -57,9 +57,9 @@ export class Matrix4x4 {
     public static rotationY(angleRad: number): Matrix4x4 {
         const matrix = Matrix4x4.empty();
         matrix.rows[0 * 4 + 0] = Math.cos(angleRad);
-        matrix.rows[0 * 4 + 2] = Math.sin(angleRad);
+        matrix.rows[0 * 4 + 2] = -Math.sin(angleRad);
         matrix.rows[1 * 4 + 1] = 1;
-        matrix.rows[2 * 4 + 0] = -Math.sin(angleRad);
+        matrix.rows[2 * 4 + 0] = Math.sin(angleRad);
         matrix.rows[2 * 4 + 2] = Math.cos(angleRad);
         matrix.rows[3 * 4 + 3] = 1;
         return matrix;
@@ -97,6 +97,26 @@ export class Matrix4x4 {
             sum += this.rows[i * 4 + colNumber] * vec.d[i]
         }
         sum += this.rows[3 * 4 + colNumber]
+
+        return sum;
+    }
+
+
+    public multiplyWithVec3d(vec: Vec3d): Vec3d {
+        const nv: Vec3d = Vec3d.empty();
+
+        for (let i = 0; i < 4; i++) {
+            nv.d[i] = this.mulRowbyVec4(i, vec)
+        }
+
+        return nv;
+    }
+
+    private mulRowbyVec4(rowNumber: number, vec: Vec3d): number {
+        let sum = 0;
+        for (let i = 0; i < 4; i++) {
+            sum += this.rows[i + 4 * rowNumber] * vec.d[i]
+        }
 
         return sum;
     }

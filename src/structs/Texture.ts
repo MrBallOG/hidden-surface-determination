@@ -10,21 +10,21 @@ export class Texture {
     }
 
     public getPx(normX: number, normY: number): Color {
-        let xFloor = Math.floor(normX*this.width)
-        let yFloor = Math.floor(normY*this.height)
+        let xFloor = Math.floor(normX * this.width)
+        let yFloor = Math.floor(normY * this.height)
         if (xFloor == 0 || xFloor === this.width - 1 || yFloor === 0 || yFloor === this.height - 1) {
             let dataStart = (xFloor + this.width * yFloor) * 3
-            return new Color([this.data[dataStart], this.data[dataStart+1], this.data[dataStart+2]])
+            return new Color([this.data[dataStart], this.data[dataStart + 1], this.data[dataStart + 2]])
         }
 
         let dataStart = (xFloor + this.width * yFloor) * 3
-        let color = Color.rgb(0,0,0)
+        let color = Color.rgb(0, 0, 0)
         for (let x = -1; x < 2; x++) {
             for (let y = -1; y < 2; y++) {
-                let offset = (x+y*this.width) * 3
-                color.r += this.data[dataStart+offset]
-                color.g += this.data[dataStart+offset+1]
-                color.b += this.data[dataStart+offset+2]
+                let offset = (x + y * this.width) * 3
+                color.r += this.data[dataStart + offset]
+                color.g += this.data[dataStart + offset + 1]
+                color.b += this.data[dataStart + offset + 2]
             }
         }
 
@@ -75,35 +75,43 @@ export class Color {
 
 }
 
-const Green = new Color([255, 0, 128])
-const Blue = new Color([0,0,255])
+const Yellow = new Color([255, 204, 0])
+const Blue = new Color([0, 87, 217])
 
 export const generateLg = (): Texture => {
     let width = 512
     let height = 512
-    let data = new Uint8ClampedArray(width*height*3)
+    let data = new Uint8ClampedArray(width * height * 3)
 
-    let r = Green.r
-    let g = Green.g
-    let b = Green.b
+    let r = Yellow.r
+    let g = Yellow.g
+    let b = Yellow.b
+
+    const colorSwitch = () => {
+        if (r == Blue.r) {
+            r = Yellow.r
+            g = Yellow.g
+            b = Yellow.b
+        } else {
+            r = Blue.r
+            g = Blue.g
+            b = Blue.b
+        }
+    }
+
     for (let y = 0; y < height; y++) {
-        if (y % 64 === 0) {
-            if (r == 0) {
-                r = Green.r
-                g = Green.g
-                b = Green.b
-            } else {
-                r = Blue.r
-                g = Blue.g
-                b = Blue.b
-            }
+        if (y % 128 === 0) {
+            colorSwitch()
         }
 
         for (let x = 0; x < width; x++) {
-            let dataStart = (y * width + x)*3;
+            if (x % 128 === 0) {
+                colorSwitch()
+            }
+            let dataStart = (y * width + x) * 3;
             data[dataStart] = r
-            data[dataStart+1] = g
-            data[dataStart+2] = b
+            data[dataStart + 1] = g
+            data[dataStart + 2] = b
         }
     }
 
