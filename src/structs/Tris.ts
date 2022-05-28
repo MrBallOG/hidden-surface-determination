@@ -6,6 +6,9 @@ export class Tris {
     public readonly nonPerspectiveVertexes: [Vec3d, Vec3d, Vec3d]
     public readonly texCoords: [Vec2d, Vec2d, Vec2d]
     public readonly normal: Vec3d
+    private maxYVal: number
+    private minYVal: number
+    private area: number
 
     constructor(vert: [Vec3d, Vec3d, Vec3d], texCoords?: [Vec2d, Vec2d, Vec2d]) {
         this.vertexes = vert;
@@ -106,11 +109,11 @@ export class Tris {
     //https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
     public getTextureCoords(x: number, y: number): Vec2d {
         let p = Vec3d.from(x, y, this.calcZOn(x, y));
-        let p1 = this.p1.copy();
-        let p2 = this.p2.copy();
-        let p3 = this.p3.copy();
+        let p1 = this.p1;
+        let p2 = this.p2;
+        let p3 = this.p3;
 
-        let p1p2p3 = calc3dArea(p1, p2, p3)
+        let p1p2p3 = this.area
         let p1p2P = calc3dArea(p1, p2, p) / p1p2p3
         let p2p3P = calc3dArea(p2, p3, p) / p1p2p3
         let p3p1P = calc3dArea(p3, p1, p) / p1p2p3
@@ -168,12 +171,24 @@ export class Tris {
         )
     }
 
+    public setArea() {
+        this.area = calc3dArea(this.p1, this.p2, this.p3)
+    }
+
+    public setMinY() {
+        this.minYVal = Math.min(this.p1.y, this.p2.y, this.p3.y)
+    }
+
+    public setMaxY() {
+        this.maxYVal = Math.max(this.p1.y, this.p2.y, this.p3.y)
+    }
+
     public get maxY(): number {
-        return Math.max(this.p1.y, this.p2.y, this.p3.y)
+        return this.maxYVal
     }
 
     public get minY(): number {
-        return Math.min(this.p1.y, this.p2.y, this.p3.y)
+        return this.minYVal
     }
 
     public get p1(): Vec3d {

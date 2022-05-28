@@ -46,6 +46,9 @@ export class CameraEngine {
         // project
         for (let i = 0; i < meshToRender.triangles.length; i++) {
             meshToRender.triangles[i] = this.project(meshToRender.triangles[i])
+            meshToRender.triangles[i].setArea()
+            meshToRender.triangles[i].setMaxY()
+            meshToRender.triangles[i].setMinY()
         }
 
         let diff = (performance.now() - start) / 1000
