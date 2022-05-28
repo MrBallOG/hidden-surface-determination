@@ -15,7 +15,7 @@ export class CameraEngine {
     public readonly cameraInfo: CameraInfo
     public readonly cameraPos = new CameraPos();
 
-    private lightPos: Vec3d = Vec3d.from(-500, -300, -800)
+    private lightPosNormalised: Vec3d = Vec3d.from(-4, -3, -7).normalise()
     private ctx: CanvasRenderingContext2D
 
     constructor(width: number, height: number) {
@@ -57,8 +57,6 @@ export class CameraEngine {
         // sort remaining tris
         meshToRender.triangles
             .sort((t1, t2) => t2.maxY - t1.maxY)
-        // let lightPos = this.projector(Tris.from(this.lightPos, Vec3d.empty(), Vec3d.empty())).p1
-        let lightPos = this.lightPos
 
         // console.log("render pipeline")
 
@@ -93,8 +91,7 @@ export class CameraEngine {
                 let tris = trisAtPx[trisIndex]
 
                 // lightning
-                let trisNormal = tris.normal
-                let lightStrength = trisNormal.normalise().dotProduct(lightPos.normalise())
+                let lightStrength = tris.normal.dotProduct(this.lightPosNormalised)
                 lightStrength = Math.max(Math.min(lightStrength, 1), 0.15)
 
 

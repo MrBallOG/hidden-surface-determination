@@ -18,7 +18,7 @@ export class Tris {
         } else {
             this.texCoords = [Vec2d.empty(), Vec2d.empty(), Vec2d.empty()]
         }
-        this.normal = this.calcNormal()
+        this.normal = this.calcNormal().normalise()
     }
 
     public static from(v1: Vec3d, v2: Vec3d, v3: Vec3d): Tris {
