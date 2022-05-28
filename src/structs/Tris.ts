@@ -1,10 +1,11 @@
-import {Vec2d, Vec3d} from "./Vectors";
-import type {Matrix4x4} from "./Matrix4x4";
+import { Vec2d, Vec3d } from "./Vectors";
+import type { Matrix4x4 } from "./Matrix4x4";
 
 export class Tris {
     public readonly vertexes: [Vec3d, Vec3d, Vec3d]
     public readonly nonPerspectiveVertexes: [Vec3d, Vec3d, Vec3d]
     public readonly texCoords: [Vec2d, Vec2d, Vec2d]
+    public readonly normal: Vec3d
 
     constructor(vert: [Vec3d, Vec3d, Vec3d], texCoords?: [Vec2d, Vec2d, Vec2d]) {
         this.vertexes = vert;
@@ -14,14 +15,15 @@ export class Tris {
         } else {
             this.texCoords = [Vec2d.empty(), Vec2d.empty(), Vec2d.empty()]
         }
+        this.normal = this.calcNormal()
     }
 
     public static from(v1: Vec3d, v2: Vec3d, v3: Vec3d): Tris {
-        return new Tris([v1,v2,v3])
+        return new Tris([v1, v2, v3])
     }
 
     public static textured(v1: Vec3d, v2: Vec3d, v3: Vec3d, t1: Vec2d, t2: Vec2d, t3: Vec2d): Tris {
-        return new Tris([v1, v2, v3], [t1,t2,t3])
+        return new Tris([v1, v2, v3], [t1, t2, t3])
     }
 
     public static empty(): Tris {
@@ -147,12 +149,12 @@ export class Tris {
         }
 
         let points = this.vertexes
-        let d1,d2,d3
+        let d1, d2, d3
         let hasNeg, hasPos
 
-        d1 = sign(x,y, points[0].x, points[0].y, points[1].x, points[1].y)
-        d2 = sign(x,y, points[1].x, points[1].y, points[2].x, points[2].y)
-        d3 = sign(x,y, points[2].x, points[2].y, points[0].x, points[0].y)
+        d1 = sign(x, y, points[0].x, points[0].y, points[1].x, points[1].y)
+        d2 = sign(x, y, points[1].x, points[1].y, points[2].x, points[2].y)
+        d3 = sign(x, y, points[2].x, points[2].y, points[0].x, points[0].y)
 
         hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
         hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
@@ -202,7 +204,7 @@ export class Tris {
 
 export function calcArea(v1: Vec2d, v2: Vec2d, v3: Vec2d): number {
     return Math.abs(
-        (v1.x*v2.y + v2.x*v3.y + v3.x*v1.y - v1.y*v2.x - v2.y*v3.x - v3.y*v1.x) /
+        (v1.x * v2.y + v2.x * v3.y + v3.x * v1.y - v1.y * v2.x - v2.y * v3.x - v3.y * v1.x) /
         2
     )
 }

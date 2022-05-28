@@ -15,7 +15,7 @@ export class CameraEngine {
     public readonly cameraInfo: CameraInfo
     public readonly cameraPos = new CameraPos();
 
-    private lightPos: Vec3d = Vec3d.from(-500, 300, -800)
+    private lightPos: Vec3d = Vec3d.from(-500, -300, -800)
     private ctx: CanvasRenderingContext2D
 
     constructor(width: number, height: number) {
@@ -36,17 +36,21 @@ export class CameraEngine {
         for (let i = 0; i < mesh.triangles.length; i++) {
             let tris = mesh.triangles[i]
             let t = tris.p1.subtract(cameraPos)
-            let dotProduct = t.dotProduct(tris.calcNormal())
+            let dotProduct = t.dotProduct(tris.normal)
             if (dotProduct < 0) {
                 meshToRender.add(tris)
             }
         }
 
+        let start = performance.now()
         // project
         for (let i = 0; i < meshToRender.triangles.length; i++) {
             meshToRender.triangles[i] = this.project(meshToRender.triangles[i])
         }
 
+        let diff = (performance.now() - start) / 1000
+        console.log('projecting', diff)
+        start = performance.now()
         // sort remaining tris
         meshToRender.triangles
             .sort((t1, t2) => t2.maxY - t1.maxY)
@@ -86,7 +90,7 @@ export class CameraEngine {
                 let tris = trisAtPx[trisIndex]
 
                 // lightning
-                let trisNormal = tris.calcNormal()
+                let trisNormal = tris.normal
                 let lightStrength = trisNormal.normalise().dotProduct(lightPos.normalise())
                 lightStrength = Math.max(Math.min(lightStrength, 1), 0.15)
 
@@ -101,6 +105,9 @@ export class CameraEngine {
             }
         }
         this.ctx.putImageData(data, 0, 0)
+
+        diff = (performance.now() - start) / 1000
+        console.log('hidd surf', diff)
 
         if (drawEdges) {
             ctx.strokeStyle = 'rgba(0,0,200, 0.7)'
