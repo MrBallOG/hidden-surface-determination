@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CameraEngine } from './CameraEngine';
 	import { onMount } from 'svelte';
-	import { defaultPlain, Mesh, texturedCube } from './structs/Mesh';
+	import { defaultPlain, Mesh, texturedCube, texturedCuboid } from './structs/Mesh';
 
 	const width = 1200;
 	const height = 700;
@@ -10,34 +10,20 @@
 
 	let camera = new CameraEngine(width, height);
 	let scene: Mesh = new Mesh([]);
-	let cube1 = texturedCube().translateZ(2).translateX(-1);
+	let cube1 = texturedCube().translateZ(2).translateX(-2);
 	let cube2 = texturedCube().translateZ(2).translateX(0.5);
-	// let cube3 = texturedCube()
-	//     .translateZ(2)
-	//     .translateX(1.5)
-	// let cube4 = texturedCube()
-	//     .translateZ(4)
-	//     .translateX(0.5)
+	let cube3 = texturedCube().translateZ(4).translateX(-2.5);
+	let cube4 = texturedCuboid().translateZ(4).translateX(0.5).translateY(-1);
 
-	// let cube5 = texturedCube()
-	//     .translateZ(4)
-	//     .translateX(-1.5)
+	// let cube5 = texturedCube().translateZ(4).translateX(1.5).translateY(-1);
 
-	// let cube6 = texturedCube()
-	//     .translateZ(4)
-	//     .translateX(2)
+	// let cube6 = texturedCube().translateZ(4).translateX(2);
 
-	// let cube7 = texturedCube()
-	//     .translateZ(4)
-	//     .translateX(-3)
+	// let cube7 = texturedCube().translateZ(4).translateX(-3);
 
-	// let cube8= texturedCube()
-	//     .translateZ(6)
-	//     .translateX(2)
+	// let cube8 = texturedCube().translateZ(6).translateX(2);
 
-	// let cube9 = texturedCube()
-	//     .translateZ(6)
-	//     .translateX(-3)
+	// let cube9 = texturedCube().translateZ(6).translateX(-3);
 
 	// let plain = defaultPlain()
 	//     .translateX(-3)
@@ -46,8 +32,8 @@
 
 	scene.addMesh(cube1);
 	scene.addMesh(cube2);
-	// scene.addMesh(cube3);
-	// scene.addMesh(cube4);
+	scene.addMesh(cube3);
+	scene.addMesh(cube4);
 	// scene.addMesh(cube5);
 	// scene.addMesh(cube6);
 	// scene.addMesh(cube7);

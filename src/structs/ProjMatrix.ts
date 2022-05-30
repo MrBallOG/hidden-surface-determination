@@ -1,11 +1,10 @@
-import {Mesh} from "./Mesh";
-import {Matrix4x4} from "./Matrix4x4";
-import type {Vec3d} from "./Vectors";
-import type {Tris} from "./Tris";
+import { Mesh } from "./Mesh";
+import { Matrix4x4 } from "./Matrix4x4";
+import type { Vec3d } from "./Vectors";
+import type { Tris } from "./Tris";
 
 export class ProjMatrix extends Matrix4x4 {
 
-    // olc
     constructor(fov: number, zFar: number, zNear: number, width: number, height: number) {
         const scaleFactor = 1 / Math.tan(fov / 2);
         super([
@@ -16,18 +15,6 @@ export class ProjMatrix extends Matrix4x4 {
         ])
     }
 
-    // constructor(fov: number, zFar: number, zNear: number, width: number, height: number) {
-    //     const scaleFactor = Math.tan(Math.PI * 0.5 - 0.5 * fov);
-    //     const rangeInv = 1 / (zNear - zFar)
-    //
-    //     super([
-    //         scaleFactor / (width / height), 0, 0 ,0,
-    //         0, scaleFactor, 0, 0,
-    //         0, 0, (zNear + zFar) * rangeInv, -1,
-    //         0, 0, zNear * zFar * rangeInv * 2, 0
-    //     ])
-    // }
-
     public projectMesh(mesh: Mesh): Mesh {
         const newMesh = [] as Tris[];
         for (let i = 0; i < mesh.triangles.length; i++) {
@@ -37,14 +24,7 @@ export class ProjMatrix extends Matrix4x4 {
         return new Mesh(newMesh)
     }
 
-    // public projectTris(tris: tris): tris {
-    //     const newTris = emptyTris();
-    //     for (let i = 0; i < 3; i++) {
-    //         newTris[i] = this.projectVec(tris[i]);
-    //     }
-    //
-    //     return newTris
-    // }
+
     public projectTris(tris: Tris): Tris {
         const newTris = tris.copy();
         for (let i = 0; i < 3; i++) {

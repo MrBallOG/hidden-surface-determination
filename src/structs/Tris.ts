@@ -9,6 +9,10 @@ export class Tris {
     private maxYVal: number
     private minYVal: number
     private area: number
+    private p1p2LineCoeffs: number[]
+    private p1p3LineCoeffs: number[]
+    private p2p3LineCoeffs: number[]
+    private eps = 0.001
 
     constructor(vert: [Vec3d, Vec3d, Vec3d], texCoords?: [Vec2d, Vec2d, Vec2d]) {
         this.vertexes = vert;
@@ -77,8 +81,7 @@ export class Tris {
         let b = a2 * c1 - a1 * c2;
         let c = a1 * b2 - b1 * a2;
         let d = (-a * this.p1.x - b * this.p1.y - c * this.p1.z);
-        // document.write("equation of plane is " + a + " x + "
-        //     + b + " y + " + c + " z + " + d + " = 0.");
+
         this.equation_plane = Vec3d.from(a, b, c, d)
         return this.equation_plane
     }
@@ -87,24 +90,6 @@ export class Tris {
         let plane = this.equationPlane()
         return -(plane.x * x + plane.y * y + plane.w) / plane.z
     }
-
-    // //https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
-    // public getTextureCoords(x: number, y: number): Vec2d {
-    //     let p = Vec3d.from(x, y, this.calcZOn(x, y));
-    //     let p1 = this.p1.copy();
-    //     let p2 = this.p2.copy();
-    //     let p3 = this.p3.copy();
-    //
-    //     let p1p2p3 = calc3dArea(p1, p2, p3)
-    //     let p1p2P = (calc3dArea(p1, p2, p) / p1p2p3)
-    //     let p2p3P = (calc3dArea(p2, p3, p) / p1p2p3)
-    //     let p3p1P = (calc3dArea(p3, p1, p) / p1p2p3)
-    //
-    //     return Vec2d.from(
-    //         this.p1tex.x * p2p3P + this.p2tex.x * p3p1P + this.p3tex.x * p1p2P,
-    //         this.p1tex.y * p2p3P + this.p2tex.y * p3p1P + this.p3tex.y * p1p2P,
-    //     )
-    // }
 
     //https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
     public getTextureCoords(x: number, y: number): Vec2d {
@@ -169,6 +154,41 @@ export class Tris {
         return new Tris([this.p1.copy(), this.p2.copy(), this.p3.copy()]
             , [this.p1tex.copy(), this.p2tex.copy(), this.p3tex.copy()]
         )
+    }
+
+    public getXRange(y: number) {
+        let xVals = []
+
+        xVals.push(this.getXAtY(y, this.p1, this.p1p2LineCoeffs))
+        xVals.push(this.getXAtY(y, this.p1, this.p1p3LineCoeffs))
+        xVals.push(this.getXAtY(y, this.p2, this.p2p3LineCoeffs))
+        xVals = xVals.filter(x => x !== null && (this.pointInside(x, y) || this.pointInside(x - this.eps, y) || this.pointInside(x + this.eps, y)))
+
+        return [Math.min(...xVals), Math.max(...xVals)]
+    }
+
+    private getXAtY(y: number, p1: Vec3d, LineCoeffs: number[]) {
+        if ((LineCoeffs[0] === 0 && p1.y === y) || LineCoeffs[1] === 0) {
+            return p1.x
+        }
+        else if (LineCoeffs[0] === 0 && p1.y !== y) {
+            return null
+        }
+        return -((LineCoeffs[1] * y + LineCoeffs[2]) / LineCoeffs[0])
+    }
+
+    public calcLinesCoeffs() {
+        this.p1p2LineCoeffs = this.calcLineCoeffs(this.p1, this.p2)
+        this.p1p3LineCoeffs = this.calcLineCoeffs(this.p1, this.p3)
+        this.p2p3LineCoeffs = this.calcLineCoeffs(this.p2, this.p3)
+    }
+
+    private calcLineCoeffs(p1: Vec3d, p2: Vec3d) {
+        let a = p1.y - p2.y
+        let b = p2.x - p1.x
+        let c = p1.x * p2.y - p2.x * p1.y
+
+        return [a, b, c]
     }
 
     public setArea() {

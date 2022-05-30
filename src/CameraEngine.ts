@@ -17,9 +17,10 @@ export class CameraEngine {
 
     private lightPosNormalised: Vec3d = Vec3d.from(-4, -3, -7).normalise()
     private ctx: CanvasRenderingContext2D
+    private eps = 0.001
 
     constructor(width: number, height: number) {
-        this.cameraInfo = new CameraInfo(width, height);
+        this.cameraInfo = new CameraInfo(width, height)
     }
 
     public clear(ctx: Ctx) {
@@ -42,23 +43,17 @@ export class CameraEngine {
             }
         }
 
-        let start = performance.now()
         // project
         for (let i = 0; i < meshToRender.triangles.length; i++) {
             meshToRender.triangles[i] = this.project(meshToRender.triangles[i])
             meshToRender.triangles[i].setArea()
             meshToRender.triangles[i].setMaxY()
             meshToRender.triangles[i].setMinY()
+            meshToRender.triangles[i].calcLinesCoeffs()
         }
 
-        let diff = (performance.now() - start) / 1000
-        console.log('projecting', diff)
-        start = performance.now()
-        // sort remaining tris
-        meshToRender.triangles
-            .sort((t1, t2) => t2.maxY - t1.maxY)
-
-        // console.log("render pipeline")
+        // meshToRender.triangles
+        //     .sort((t1, t2) => t2.maxY - t1.maxY)
 
         let data = this.ctx.getImageData(0, 0, this.cameraInfo.width, this.cameraInfo.height)
         for (let y = 0; y < this.cameraInfo.height; y++) {
@@ -68,46 +63,74 @@ export class CameraEngine {
                 return tris.maxY >= y3d && tris.minY <= y3d
             })
             if (trisAtHeight.length === 0) {
-                continue;
+                continue
             }
 
-            for (let x = 0; x < this.cameraInfo.width; x++) {
-                let x3d = this.xTo3dSpace(x)
-                let trisAtPx = trisAtHeight.filter(tris => tris.pointInside(x3d, y3d))
-                if (trisAtPx.length === 0) {
-                    continue
+            let xRanges = trisAtHeight.map((tris, i) => [i, tris.getXRange(y3d)])
+            let xSharedSet = new Set<number>()
+            xRanges.forEach(range => {
+                xSharedSet.add(range[1][0])
+                xSharedSet.add(range[1][1])
+            })
+            let xShared = [...xSharedSet].sort((t1, t2) => t1 - t2)
+            let x2dRange = xShared.map(x => [this.x3dTo2dSpace(x), -1])
+
+            for (let i = 1; i < xShared.length; i++) {
+                let x1 = xShared[i - 1]
+                let x2 = xShared[i]
+                let trisIndexesWithZ = []
+
+                for (let j = 0; j < trisAtHeight.length; j++) {
+                    let tris = trisAtHeight[j]
+
+                    if (!(tris.pointInside(x1, y3d) && tris.pointInside(x2, y3d)) && !(tris.pointInside(x1 + this.eps, y3d) && tris.pointInside(x2 - this.eps, y3d)))
+                        continue
+
+                    trisIndexesWithZ.push([j, tris.calcZOn(x1, y3d), tris.calcZOn(x2, y3d)])
                 }
 
-                let closestDistance = trisAtPx[0].calcZOn(x3d, y3d)
-                let trisIndex = 0
-                let distance = 0
-                for (let i = 1; i < trisAtPx.length; i++) {
-                    distance = trisAtPx[i].calcZOn(x3d, y3d)
-                    if (distance < closestDistance) {
-                        closestDistance = distance
-                        trisIndex = i
-                    }
-                }
-                let tris = trisAtPx[trisIndex]
+                if (trisIndexesWithZ.length == 0)
+                    continue
+
+                x2dRange[i][1] = trisIndexesWithZ.sort((t1, t2) => {
+                    if (t1[1] === t2[1])
+                        return t1[2] - t2[2]
+                    return t1[1] - t2[1]
+                })[0][0]
+            }
+
+            for (let i = 1; i < x2dRange.length; i++) {
+                let x1 = x2dRange[i - 1][0]
+                let x2 = x2dRange[i][0]
+                let trisIndex = x2dRange[i][1]
+
+                if (trisIndex === -1 || (x1 < 0 && x2 < 0) || (x1 > this.cameraInfo.width - 1 && x2 > this.cameraInfo.width - 1))
+                    continue
+
+                if (x1 < 0)
+                    x1 = 0
+
+                if (x2 > this.cameraInfo.width - 1)
+                    x2 = this.cameraInfo.width - 1
+
+                let tris = trisAtHeight[trisIndex]
 
                 // lightning
                 let lightStrength = tris.normal.dotProduct(this.lightPosNormalised)
                 lightStrength = Math.max(Math.min(lightStrength, 1), 0.15)
 
-
-                let textureCoords = tris.getTextureCoords(x3d, y3d)
-                let color = texture.getPx(textureCoords.x, textureCoords.y)
-                let dataStart = (y * data.width + x) * 4;
-                data.data[dataStart] = color.r * lightStrength
-                data.data[dataStart + 1] = color.g * lightStrength
-                data.data[dataStart + 2] = color.b * lightStrength
-                data.data[dataStart + 3] = 255
+                for (let x = x1; x < x2; x++) {
+                    let textureCoords = tris.getTextureCoords(this.xTo3dSpace(x), y3d)
+                    let color = texture.getPx(textureCoords.x, textureCoords.y)
+                    let dataStart = (y * data.width + x) * 4;
+                    data.data[dataStart] = color.r * lightStrength
+                    data.data[dataStart + 1] = color.g * lightStrength
+                    data.data[dataStart + 2] = color.b * lightStrength
+                    data.data[dataStart + 3] = 255
+                }
             }
         }
         this.ctx.putImageData(data, 0, 0)
-
-        diff = (performance.now() - start) / 1000
-        console.log('hidd surf', diff)
 
         if (drawEdges) {
             ctx.strokeStyle = 'rgba(0,0,200, 0.7)'
@@ -157,6 +180,14 @@ export class CameraEngine {
     private yTo3dSpace(yCoord: number): number {
         return (2 * yCoord) / this.cameraInfo.height - 1
     }
+
+    private x3dTo2dSpace(x3d: number): number {
+        return Math.ceil((x3d + 1) * this.cameraInfo.width / 2)
+    }
+
+    // private y3dTo2dSpace(y3d: number): number {
+    //     return Math.ceil((y3d + 1) * this.cameraInfo.width / 2)
+    // }
 
 }
 

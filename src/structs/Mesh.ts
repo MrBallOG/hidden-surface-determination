@@ -1,6 +1,6 @@
-import {Vec2d, Vec3d} from "./Vectors";
-import {Matrix4x4} from "./Matrix4x4";
-import {Tris} from "./Tris";
+import { Vec2d, Vec3d } from "./Vectors";
+import { Matrix4x4 } from "./Matrix4x4";
+import { Tris } from "./Tris";
 
 
 export class Mesh {
@@ -44,7 +44,7 @@ export class Mesh {
             }
             newMesh.push(newTris)
         }
-        
+
         return new Mesh(newMesh);
     }
 
@@ -94,41 +94,58 @@ export class Mesh {
 
 export const defaultCube = (): Mesh => {
     return new Mesh([
-        Tris.from(Vec3d.from(0,0,0),Vec3d.from(0,1,0),Vec3d.from(1,1,0)),
-        Tris.from(Vec3d.from(0,0,0),Vec3d.from(1,1,0),Vec3d.from(1,0,0)),
-        Tris.from(Vec3d.from(1,0,0),Vec3d.from(1,1,0),Vec3d.from(1,1,1)),
-        Tris.from(Vec3d.from(1,0,0),Vec3d.from(1,1,1),Vec3d.from(1,0,1)),
-        Tris.from(Vec3d.from(1,0,1),Vec3d.from(1,1,1),Vec3d.from(0,1,1)),
-        Tris.from(Vec3d.from(1,0,1),Vec3d.from(0,1,1),Vec3d.from(0,0,1)),
-        Tris.from(Vec3d.from(0,0,1),Vec3d.from(0,1,1),Vec3d.from(0,1,0)),
-        Tris.from(Vec3d.from(0,0,1),Vec3d.from(0,1,0),Vec3d.from(0,0,0)),
-        Tris.from(Vec3d.from(0,1,0),Vec3d.from(0,1,1),Vec3d.from(1,1,1)),
-        Tris.from(Vec3d.from(0,1,0),Vec3d.from(1,1,1),Vec3d.from(1,1,0)),
-        Tris.from(Vec3d.from(1,0,1),Vec3d.from(0,0,1),Vec3d.from(0,0,0)),
-        Tris.from(Vec3d.from(1,0,1),Vec3d.from(0,0,0),Vec3d.from(1,0,0)),
+        Tris.from(Vec3d.from(0, 0, 0), Vec3d.from(0, 1, 0), Vec3d.from(1, 1, 0)),
+        Tris.from(Vec3d.from(0, 0, 0), Vec3d.from(1, 1, 0), Vec3d.from(1, 0, 0)),
+        Tris.from(Vec3d.from(1, 0, 0), Vec3d.from(1, 1, 0), Vec3d.from(1, 1, 1)),
+        Tris.from(Vec3d.from(1, 0, 0), Vec3d.from(1, 1, 1), Vec3d.from(1, 0, 1)),
+        Tris.from(Vec3d.from(1, 0, 1), Vec3d.from(1, 1, 1), Vec3d.from(0, 1, 1)),
+        Tris.from(Vec3d.from(1, 0, 1), Vec3d.from(0, 1, 1), Vec3d.from(0, 0, 1)),
+        Tris.from(Vec3d.from(0, 0, 1), Vec3d.from(0, 1, 1), Vec3d.from(0, 1, 0)),
+        Tris.from(Vec3d.from(0, 0, 1), Vec3d.from(0, 1, 0), Vec3d.from(0, 0, 0)),
+        Tris.from(Vec3d.from(0, 1, 0), Vec3d.from(0, 1, 1), Vec3d.from(1, 1, 1)),
+        Tris.from(Vec3d.from(0, 1, 0), Vec3d.from(1, 1, 1), Vec3d.from(1, 1, 0)),
+        Tris.from(Vec3d.from(1, 0, 1), Vec3d.from(0, 0, 1), Vec3d.from(0, 0, 0)),
+        Tris.from(Vec3d.from(1, 0, 1), Vec3d.from(0, 0, 0), Vec3d.from(1, 0, 0)),
     ])
 }
 
 export const texturedCube = (): Mesh => {
     return new Mesh([
-        Tris.textured(Vec3d.from(0,0,0),Vec3d.from(0,1,0),Vec3d.from(1,1,0),        Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
-        Tris.textured(Vec3d.from(0,0,0),Vec3d.from(1,1,0),Vec3d.from(1,0,0),        Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
-        Tris.textured(Vec3d.from(1,0,0),Vec3d.from(1,1,0),Vec3d.from(1,1,1),        Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
-        Tris.textured(Vec3d.from(1,0,0),Vec3d.from(1,1,1),Vec3d.from(1,0,1),        Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
-        Tris.textured(Vec3d.from(1,0,1),Vec3d.from(1,1,1),Vec3d.from(0,1,1),        Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
-        Tris.textured(Vec3d.from(1,0,1),Vec3d.from(0,1,1),Vec3d.from(0,0,1),        Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
-        Tris.textured(Vec3d.from(0,0,1),Vec3d.from(0,1,1),Vec3d.from(0,1,0),        Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
-        Tris.textured(Vec3d.from(0,0,1),Vec3d.from(0,1,0),Vec3d.from(0,0,0),        Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
-        Tris.textured(Vec3d.from(0,1,0),Vec3d.from(0,1,1),Vec3d.from(1,1,1),        Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
-        Tris.textured(Vec3d.from(0,1,0),Vec3d.from(1,1,1),Vec3d.from(1,1,0),        Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
-        Tris.textured(Vec3d.from(1,0,1),Vec3d.from(0,0,1),Vec3d.from(0,0,0),        Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
-        Tris.textured(Vec3d.from(1,0,1),Vec3d.from(0,0,0),Vec3d.from(1,0,0),        Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(0, 0, 0), Vec3d.from(0, 1, 0), Vec3d.from(1, 1, 0), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(0, 0, 0), Vec3d.from(1, 1, 0), Vec3d.from(1, 0, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(1, 0, 0), Vec3d.from(1, 1, 0), Vec3d.from(1, 1, 1), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(1, 0, 0), Vec3d.from(1, 1, 1), Vec3d.from(1, 0, 1), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(1, 1, 1), Vec3d.from(0, 1, 1), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(0, 1, 1), Vec3d.from(0, 0, 1), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(0, 0, 1), Vec3d.from(0, 1, 1), Vec3d.from(0, 1, 0), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(0, 0, 1), Vec3d.from(0, 1, 0), Vec3d.from(0, 0, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(0, 1, 0), Vec3d.from(0, 1, 1), Vec3d.from(1, 1, 1), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(0, 1, 0), Vec3d.from(1, 1, 1), Vec3d.from(1, 1, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(0, 0, 1), Vec3d.from(0, 0, 0), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(0, 0, 0), Vec3d.from(1, 0, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+    ])
+}
+
+export const texturedCuboid = (): Mesh => {
+    return new Mesh([
+        Tris.textured(Vec3d.from(0, 0, 0), Vec3d.from(0, 1 + 1, 0), Vec3d.from(1, 1 + 1, 0), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(0, 0, 0), Vec3d.from(1, 1 + 1, 0), Vec3d.from(1, 0, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(1, 0, 0), Vec3d.from(1, 1 + 1, 0), Vec3d.from(1, 1 + 1, 1), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(1, 0, 0), Vec3d.from(1, 1 + 1, 1), Vec3d.from(1, 0, 1), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(1, 1 + 1, 1), Vec3d.from(0, 1 + 1, 1), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(0, 1 + 1, 1), Vec3d.from(0, 0, 1), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(0, 0, 1), Vec3d.from(0, 1 + 1, 1), Vec3d.from(0, 1 + 1, 0), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(0, 0, 1), Vec3d.from(0, 1 + 1, 0), Vec3d.from(0, 0, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(0, 1 + 1, 0), Vec3d.from(0, 1 + 1, 1), Vec3d.from(1, 1 + 1, 1), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(0, 1 + 1, 0), Vec3d.from(1, 1 + 1, 1), Vec3d.from(1, 1 + 1, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(0, 0, 1), Vec3d.from(0, 0, 0), Vec2d.from(0, 1), Vec2d.from(0, 0), Vec2d.from(1, 0)),
+        Tris.textured(Vec3d.from(1, 0, 1), Vec3d.from(0, 0, 0), Vec3d.from(1, 0, 0), Vec2d.from(0, 1), Vec2d.from(1, 0), Vec2d.from(1, 1)),
     ])
 }
 
 export const defaultPlain = (): Mesh => {
     return new Mesh([
-        Tris.from(Vec3d.from(6,0,6),Vec3d.from(0,0,6),Vec3d.from(0,0,0)),
-        Tris.from(Vec3d.from(6,0,6),Vec3d.from(0,0,0),Vec3d.from(6,0,0)),
+        Tris.from(Vec3d.from(6, 0, 6), Vec3d.from(0, 0, 6), Vec3d.from(0, 0, 0)),
+        Tris.from(Vec3d.from(6, 0, 6), Vec3d.from(0, 0, 0), Vec3d.from(6, 0, 0)),
     ])
 }
