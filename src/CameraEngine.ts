@@ -66,11 +66,11 @@ export class CameraEngine {
                 continue
             }
 
-            let xRanges = trisAtHeight.map((tris, i) => [i, tris.getXRange(y3d)])
+            let xRanges = trisAtHeight.map(tris => tris.getXRange(y3d))
             let xSharedSet = new Set<number>()
             xRanges.forEach(range => {
-                xSharedSet.add(range[1][0])
-                xSharedSet.add(range[1][1])
+                xSharedSet.add(range[0])
+                xSharedSet.add(range[1])
             })
             let xShared = [...xSharedSet].sort((t1, t2) => t1 - t2)
             let x2dRange = xShared.map(x => [this.x3dTo2dSpace(x), -1])
